@@ -27,7 +27,6 @@ import tanuki from "./images/tanuki.png"
 function App() {
   /* === User CRUD States === */
   const [displayed_form,setDisplayedForm] = useState('');
-  const [logged_in,setLoggedIn] = useState(localStorage.getItem('token') ? true : false);
   const [username, setUsername] = useState('');
   /* === Modal States === */
   const [showItems, setShowItems] = useState(false)
@@ -36,124 +35,6 @@ function App() {
   const [showPlayerDied, setShowPlayerDied] = useState(false)
   
   /* === Navbar  Functionality === */
-
-  function fetchJWT() {
-    if (logged_in) {
-      fetch('http://localhost:8000/yokira_app_gg/current_user/', {
-      method: 'GET',
-      headers: {
-        Authorization: `JWT ${localStorage.getItem('token')}`
-      }
-    })
-      .then(res => res.json())
-      .then(json => {
-        setUsername(json.username );
-      });
-    } else {
-      return(null)
-    }
-  }
-
-  /* === JWT Auth === */
-
-
-  useEffect(function() {
-    fetchJWT() 
-  },[]);
-
-
-  const handle_login = (e, data) => {
-    e.preventDefault();
-    console.log(data)
-    fetch('http://localhost:8000/token-auth/', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(data)
-    })
-      .then(res => res.json())
-      .then(json => {
-        console.log(json)
-        localStorage.setItem('token', json.token);
-        setLoggedIn(true);
-        setDisplayedForm('');
-        setUsername(json.user.username);
-      });
-  };
-
-  const handle_signup = (e, data) => {
-    e.preventDefault();
-    fetch('http://localhost:8000/yokira_app_gg/users/', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(data)
-    })
-      .then(res => res.json())
-      .then(json => {
-        localStorage.setItem('token', json.token);
-        setLoggedIn(true);
-        setDisplayedForm('');
-        setUsername(json.username)
-      });
-  };
-  const handle_logout = () => {
-    localStorage.removeItem('token');
-    setLoggedIn(false)
-    setUsername('')
-  };
-
-  const handle_edit = (e) => {
-    e.preventDefault();
-        fetch('http://localhost:8000/yokira_app_gg/users/edit', {
-        method: 'PUT',
-        headers: {
-            Authorization: `JWT ${localStorage.getItem('token')}`,
-            "Content-Type": 'application/json'
-        },
-        body: JSON.stringify({username})
-        })
-        .then(response => response.json())
-        .then(json => {
-        console.log(json)
-        handle_logout()
-        handleCloseProfile()
-        })
-    }
-
-    const handle_delete = (e, data) => {
-        fetch('http://localhost:8000/yokira_app_gg/users/delete', {
-        method: 'DELETE',
-        headers: {
-            Authorization: `JWT ${localStorage.getItem('token')}`
-        },
-        body: JSON.stringify(data)
-        
-        })
-        .then(response =>
-        response.json()
-        )
-        .then(json => {
-        handle_logout()
-        handleCloseProfile()
-        })
-    }
-
-    
-    let form;
-    switch (displayed_form) {
-        case 'login':
-        form = <LoginForm handle_login={handle_login} />;
-        break;
-        case 'signup':
-        form = <SignupForm handle_signup={handle_signup} />;
-        break;
-        default:
-        form = null;
-        }
-  
 
     /* === Modal Functionality === */
     const handleCloseItems = () => setShowItems(false);
@@ -195,9 +76,6 @@ function App() {
     const fetchEquipment = () => {
         fetch('http://localhost:8000/backpack', {
             method: 'GET',
-            headers: {
-                Authorization: `JWT ${localStorage.getItem('token')}`
-              }
         })
         .then(res=> res.json())
         .then(json => {
@@ -274,13 +152,9 @@ function App() {
   const GameAreaActive = (
     <>
         <NavBar 
-            logged_in={logged_in}
             setDisplayedForm={setDisplayedForm}
-            handle_logout={handle_logout}
             handleShowProfile={handleShowProfile}
-            handle_edit={handle_edit}
         />
-        {form}
         <GameArea 
           level = {level}
           setLevel={setLevel}
@@ -349,8 +223,6 @@ function App() {
           handleCloseProfile={handleCloseProfile}
           setUsername={setUsername}
           username={username}
-          handle_delete={handle_delete}
-          handle_edit={handle_edit}
         />
         <PlayerDiedModal
           hp={hp}
@@ -366,13 +238,9 @@ function App() {
   const GameAreaInactive = (
     <>
       <NavBar 
-            logged_in={logged_in}
             setDisplayedForm={setDisplayedForm}
-            handle_logout={handle_logout}
             handleShowProfile={handleShowProfile}
-            handle_edit={handle_edit}
         />
-        {form}
         <div className="nes-container is-rounded is-dark" id="game-area-inactive">
           <p id="yokira-text">Yokira</p>
           <p id="get-started-text">Log in to begin your journey</p>
@@ -384,7 +252,7 @@ function App() {
 
     return (
       <>
-        {logged_in ? GameAreaActive : GameAreaInactive}
+        { GameAreaActive }
         
       </>
     );

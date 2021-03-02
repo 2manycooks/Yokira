@@ -10,9 +10,6 @@ function GameArea(props) {
         
         fetch('http://localhost:8000/enemy_info/', {
         method: 'GET',
-        headers: {
-            Authorization: `JWT ${localStorage.getItem('token')}`
-          },
         body: JSON.stringify(data)
         })
         .then(res => res.json())
