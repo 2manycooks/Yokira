@@ -14,4 +14,4 @@ This is an ongoing passion project, as well as an opportunity for me to practice
 
 Planned features not yet implemented:
 
-multiple classes  more enemy types  more abilities  an actual endgame/higher difficulty  levels  global scoreboard  more animations for player and enemy
+multiple classes<br/>  more enemy types<br/>  more abilities<br/>  an actual endgame/higher difficulty levels<br/>  global scoreboard<br/>  more animations for player and enemy
